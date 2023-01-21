@@ -1,7 +1,8 @@
 import logging
 
-year = range(2022, 2025)
-month = range(1, 13)
+year = range(2022, 2023)
+#month = range(1, 13)
+month = range(1, 4)
 day = range(1, 29)
 hour = range(24)
 minute = range(60)
