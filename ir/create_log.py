@@ -1,6 +1,6 @@
 import logging
 
-year = range(2015, 2025)
+year = range(2022, 2025)
 month = range(1, 13)
 day = range(1, 29)
 hour = range(24)
