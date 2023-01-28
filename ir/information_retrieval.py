@@ -6,11 +6,15 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
+import create_log
+
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
+# create the logs, comment out if you don't need them 
+create_log.main()
 
 def preprocess_doc(text: str) -> list:
 
@@ -75,7 +79,7 @@ def create_sorted_inverted_index(documents: dict) -> dict:
     for i in inverted_index.keys():
         sort_inverted_index[i] = sorted(
             inverted_index[i].items(),
-            key=lambda x: x[0], reverse=True)
+            key=lambda x: x[1], reverse=True)
 
     return sort_inverted_index
 
@@ -132,6 +136,7 @@ def intersect(query: str, sort_inverted_index: dict) -> list:
         terms = rest(terms)
         result = intersect_posting(result,
                                    sort_inverted_index[first_term])
+    result.sort(key = lambda x: x[1], reverse=True)
     return result
 
 
@@ -178,7 +183,7 @@ def mean_reciprocal_rank(df: pd.DataFrame) -> float:
     return mean_rr
 
 
-def mean_average_precision(df) -> float:
+def mean_average_precision(df: pd.DataFrame) -> float:
 
     for q in df["Query"].unique():
         ranks = sorted(df[df["Query"] == q]["rank"].unique())
@@ -192,17 +197,17 @@ def mean_average_precision(df) -> float:
     map = sum(query_precision) / len(query_precision)
     return map
 
+def main():
+        
+    logs = open("data/app.log")
+    line = dict()
+    for i, l in enumerate(logs):
+        line[i] = l
 
-documents = {
-    "Doc 1": "This is a document about information retrieval.",
-    "Doc 2": "This is a document about medium topics related to data.",
-    "Doc 3": "This is an article related to mediocre tables.",
-    "Doc 4": "Completely irrelevant document.",
-    "Doc 5": "Pythagoras of Samos[a] (Ancient Greek: Πυθαγόρας ὁ Σάμιος, romanized: Pythagóras ho Sámios, lit. 'Pythagoras the Samian', or simply Πυθαγόρας; Πυθαγόρης in Ionian Greek; c. 570 – c. 495 BC)[b] was an ancient Ionian Greek philosopher and the eponymous founder of Pythagoreanism. His political and religious teachings were well known in Magna Graecia and influenced the philosophies of Plato, Aristotle, and, through them, the West in general. Knowledge of his life is clouded by legend, but he appears to have been the son of Mnesarchus, a gem-engraver on the island of Samos. Modern scholars disagree regarding Pythagoras's education and influences, but they do agree that, around 530 BC, he travelled to Croton in southern Italy, where he founded a school in which initiates were sworn to secrecy and lived a communal, ascetic lifestyle. This lifestyle entailed a number of dietary prohibitions, traditionally said to have included vegetarianism, although modern scholars doubt that he ever advocated complete vegetarianism.",
-    "Doc 6": "Leonardo di ser Piero da Vinci[b] (15 April 1452 – 2 May 1519) was an Italian polymath of the High Renaissance who was active as a painter, draughtsman, engineer, scientist, theorist, sculptor, and architect.[3] While his fame initially rested on his achievements as a painter, he also became known for his notebooks, in which he made drawings and notes on a variety of subjects, including anatomy, astronomy, botany, cartography, painting, and paleontology. Leonardo is widely regarded to have been a genius who epitomized the Renaissance humanist ideal,[4] and his collective works comprise a contribution to later generations of artists matched only by that of his younger contemporary, Michelangelo.",
-    "Doc 7": "Another document about information retrieval. Information retrieval is very informative. It offers you information.",
-    "Doc 8": "Another document about information.",
-    "Doc 9": "Arithmetic is the branch of mathematics that deals with the study of numbers using various operations on them, which is taught in elementary school. Algebra is taught in high school which is also branch of mathematics.",
-    "Doc 10": "Mathematics is an area of knowledge that includes the topics of numbers, formulas and related structures, shapes and the spaces in which they are contained, and quantities and their changes.",
-    "Doc 11": "Geometry is branch of mathematics. Calculus is branch of mathematics. Discrete mathematics is branch of mathematics."
-}
+    query = "error model"
+    inverted_index = create_sorted_inverted_index(line)
+    result = intersect(query, inverted_index)
+    return result
+
+if __name__=="__main__":
+    main()

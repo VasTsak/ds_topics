@@ -8,7 +8,7 @@ hour = range(24)
 minute = range(60)
 second = range(0, 30, 5)
 
-logging.basicConfig(filename='app.log', filemode='w')
+logging.basicConfig(filename='data/app.log', filemode='w')
 
 def format_log(message, *args):
     date = ""
